@@ -1,7 +1,8 @@
 import React, {useEffect, useState} from 'react'
 import { useDispatch, useSelector } from 'react-redux';
-import { login, loginGoogle} from '../redux/actions/authActions';
+import { login, logout} from '../redux/actions/authActions';
 import { createUser, listUsers, updateUser, delUser, searchUserByName } from '../redux/actions/userActions';
+import { useNavigate } from 'react-router-dom';
 
 function Login() {
   const [name, setName] = useState('');
@@ -10,10 +11,10 @@ function Login() {
   const [phoneNumber, setPhoneNumber] = useState('');
   const [edituser, setEdituser] = useState('');
   const [search, setSearch] = useState('');
-  const [verificationCode, setVerificationCode] = useState('');
   const [listausuarios, setListaUsuarios]   = useState([]);
   const users2 = useSelector((store) => store.authReducer.usuarios);
   const dispatch = useDispatch();
+  const navigate = useNavigate()
 
   const getUsers = () => {    
     dispatch(listUsers());
@@ -32,11 +33,6 @@ function Login() {
   const handleLogin = (e) => {
     e.preventDefault();
     dispatch(login(email, password));
-  }
-
-  const handleGoogleLogin = () => {
-    dispatch(loginGoogle());
-    console.log("el formulario fue enviado con google")
   }
 
   const handleNewUser = () => {
@@ -66,18 +62,13 @@ function Login() {
     dispatch(searchUserByName(search));
     
     setListaUsuarios(users2)
-    //getUsers();
-  }
-/*
-  const handlePhoneLogin = () => {
-    dispatch(loginWithPhone(phoneNumber));
-    console.log("el formulario fue enviado con telefono")
   }
 
-  const handleCode = () => {
-    dispatch(verifyCode(verificationCode));
-    console.log("eenvio de verification code")
-  }*/
+  const handleLogout = () => {
+    dispatch(logout());
+    navigate("/notfound")
+  }
+
   return (
     <>
       <form onSubmit={handleLogin}>
@@ -87,13 +78,8 @@ function Login() {
         <button type="submit">Login</button>
       </form>
       <br/>
-      <button type="button" onClick={() => handleGoogleLogin()}>ENTRAR CON GOOGLE</button>
+      <button type="button" onClick={() => handleLogout()}>LOG OUT</button>
       <br/><br/>
-      <input type="text" placeholder="Phone" value={phoneNumber} onChange={(e) => setPhoneNumber(e.target.value)} />
-      <button type="button" >Login with phone</button>
-      <br/><br/>
-      <input type="text" placeholder="Validation Code" value={verificationCode}  />
-      <button type="button" >Send verification code</button>
 
       <hr/>
 
