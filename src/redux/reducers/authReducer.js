@@ -3,7 +3,8 @@ import { createSlice } from '@reduxjs/toolkit';
   const initialState = {
     user: null, // aqui es donde almacenamos el usuario loggeado
     loading: false, // esto es opcional si quieren colocar gifs de loading en la app
-    usuarios: [] // Este es el array que vamos a utilizar globalmente para almacenar el CRUD todo lo del form
+    usuarios: [],
+    filteredUsers: [] // Este es el array que vamos a utilizar globalmente para almacenar el CRUD todo lo del form
   };
   
   const authSlice = createSlice({

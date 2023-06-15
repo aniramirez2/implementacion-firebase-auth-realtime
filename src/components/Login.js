@@ -4,6 +4,55 @@ import { login, logout} from '../redux/actions/authActions';
 import { createUser, listUsers, updateUser, delUser, searchUserByName } from '../redux/actions/userActions';
 import { useNavigate } from 'react-router-dom';
 
+/*
+usuario: 
+  {
+    nombre,
+    appelido, 
+    telefono,
+    direccion,
+    foto,
+    correo,
+    contraseña,
+  }
+
+
+platos: [
+  {
+    ingredientes: [],
+    nombre,
+    imagenes,
+    disponibilidad: true,
+    descripcion,
+    valor
+  }
+]
+
+restaurantes: [
+  {
+    nombre,
+    imagen,
+    calificacion,
+    horario,
+    comentarios: [],
+    categoria,
+    domicilio
+  }
+]
+
+pedidos: [
+  {
+    plato,
+    cantidad,
+    valor,
+    total,
+    metodopago,
+    estadopago,
+    estadopedido,
+  }
+]
+*/
+
 function Login() {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
@@ -13,6 +62,7 @@ function Login() {
   const [search, setSearch] = useState('');
   const [listausuarios, setListaUsuarios]   = useState([]);
   const users2 = useSelector((store) => store.authReducer.usuarios);
+  const loggedUser = useSelector((store) => store.authReducer.user);
   const dispatch = useDispatch();
   const navigate = useNavigate()
 
@@ -27,6 +77,7 @@ function Login() {
       getUsers();    
       setListaUsuarios(users2)
     }
+    console.log("loggedUser", loggedUser)
   },[users2])
   
 
@@ -37,7 +88,7 @@ function Login() {
 
   const handleNewUser = () => {
     dispatch(createUser({name, email, password, phone: phoneNumber}));
-    getUsers();
+    //getUsers();
   }
 
   const handleEdit = (user) => {
@@ -50,7 +101,7 @@ function Login() {
 
   const handleUpdateUser = () => {
     dispatch(updateUser({id: edituser.id, name, email, password, phone: phoneNumber}));    
-    getUsers();
+    //getUsers();
   }
 
   const handleRemove = (id) => {
@@ -66,11 +117,11 @@ function Login() {
 
   const handleLogout = () => {
     dispatch(logout());
-    navigate("/notfound")
   }
 
   return (
     <>
+      <h1>Hola {loggedUser?.displayName} Bienvenido</h1>
       <form onSubmit={handleLogin}>
         <h1>LOGIN</h1>
         <input type="email" placeholder="Email" value={email} onChange={(e) => setEmail(e.target.value)} />
@@ -90,8 +141,8 @@ function Login() {
         <input type="email" placeholder="Email" value={email} onChange={(e) => setEmail(e.target.value)} />
         <input type="password" placeholder="Password" value={password} onChange={(e) => setPassword(e.target.value)} />
         <input type="text" placeholder="Phone" value={phoneNumber} onChange={(e) => setPhoneNumber(e.target.value)} />
-        <button type="button" onClick={() => handleNewUser()}>Create User</button>
-        <button type="button" onClick={() => handleUpdateUser()}>Update User</button>
+        { edituser? <button type="button" onClick={() => handleUpdateUser()}>Update User</button> : <button type="button" onClick={() => handleNewUser()}>Create User</button>}
+        
       </form>
 
       <hr/>

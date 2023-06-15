@@ -7,8 +7,8 @@ const NotFound = () => {
     const dispatch = useDispatch();
     const navigate = useNavigate();
     
-    const handleGoogleLogin = () => {
-        dispatch(loginGoogle());
+    const handleGoogleLogin = async() => {
+        await dispatch(loginGoogle());
         navigate('/')
     }
 
