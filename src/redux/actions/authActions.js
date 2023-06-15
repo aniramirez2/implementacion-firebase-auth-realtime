@@ -42,7 +42,7 @@ export const loginGoogle = () => {
         }
     }
 }
-
+/*
 export const loginWithPhone = (telefono) => {
     const provider = new PhoneAuthProvider();
     return async (dispatch) => {
@@ -72,7 +72,7 @@ export const verifyCode = (codigo) => {
             dispatch(setLoading(false));
         }
     }
-}
+}*/
 
 export const logout = () => {
     return async (dispatch) => {

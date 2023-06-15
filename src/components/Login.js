@@ -1,18 +1,32 @@
-import React, {useState, useEffect} from 'react'
-import { useDispatch } from 'react-redux';
-import { login, loginGoogle, loginWithPhone, verifyCode } from '../redux/actions/authActions';
-import {createUser} from '../services/api';
+import React, {useEffect, useState} from 'react'
+import { useDispatch, useSelector } from 'react-redux';
+import { login, loginGoogle} from '../redux/actions/authActions';
+import { createUser, listUsers, updateUser, delUser, searchUserByName } from '../redux/actions/userActions';
 
 function Login() {
+  const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [phoneNumber, setPhoneNumber] = useState('');
+  const [edituser, setEdituser] = useState('');
+  const [search, setSearch] = useState('');
   const [verificationCode, setVerificationCode] = useState('');
+  const [listausuarios, setListaUsuarios]   = useState([]);
+  const users2 = useSelector((store) => store.authReducer.usuarios);
   const dispatch = useDispatch();
 
+  const getUsers = () => {    
+    dispatch(listUsers());
+  }
+
   useEffect(() => {
-    createUser();
-  }, [])
+    if (search) {      
+      setListaUsuarios(users2)
+    } else {
+      getUsers();    
+      setListaUsuarios(users2)
+    }
+  },[users2])
   
 
   const handleLogin = (e) => {
@@ -25,6 +39,36 @@ function Login() {
     console.log("el formulario fue enviado con google")
   }
 
+  const handleNewUser = () => {
+    dispatch(createUser({name, email, password, phone: phoneNumber}));
+    getUsers();
+  }
+
+  const handleEdit = (user) => {
+    setEdituser(user)
+    setName(user.name);
+    setEmail(user.email);
+    setPassword(user.password);
+    setPhoneNumber(user.phone)
+  }
+
+  const handleUpdateUser = () => {
+    dispatch(updateUser({id: edituser.id, name, email, password, phone: phoneNumber}));    
+    getUsers();
+  }
+
+  const handleRemove = (id) => {
+    dispatch(delUser(id));
+    getUsers();
+  }
+
+  const handleSearch = () => {
+    dispatch(searchUserByName(search));
+    
+    setListaUsuarios(users2)
+    //getUsers();
+  }
+/*
   const handlePhoneLogin = () => {
     dispatch(loginWithPhone(phoneNumber));
     console.log("el formulario fue enviado con telefono")
@@ -33,7 +77,7 @@ function Login() {
   const handleCode = () => {
     dispatch(verifyCode(verificationCode));
     console.log("eenvio de verification code")
-  }
+  }*/
   return (
     <>
       <form onSubmit={handleLogin}>
@@ -46,10 +90,33 @@ function Login() {
       <button type="button" onClick={() => handleGoogleLogin()}>ENTRAR CON GOOGLE</button>
       <br/><br/>
       <input type="text" placeholder="Phone" value={phoneNumber} onChange={(e) => setPhoneNumber(e.target.value)} />
-      <button type="button" onClick={() => handlePhoneLogin()}>Login with phone</button>
+      <button type="button" >Login with phone</button>
       <br/><br/>
-      <input type="text" placeholder="Validation Code" value={verificationCode} onChange={(e) => setVerificationCode(e.target.value)} />
-      <button type="button" onClick={() => handleCode()}>Send verification code</button>
+      <input type="text" placeholder="Validation Code" value={verificationCode}  />
+      <button type="button" >Send verification code</button>
+
+      <hr/>
+
+      <form>
+        <h1>NEW USER</h1>
+        
+        <input type="text" placeholder="Name" value={name} onChange={(e) => setName(e.target.value)} />
+        <input type="email" placeholder="Email" value={email} onChange={(e) => setEmail(e.target.value)} />
+        <input type="password" placeholder="Password" value={password} onChange={(e) => setPassword(e.target.value)} />
+        <input type="text" placeholder="Phone" value={phoneNumber} onChange={(e) => setPhoneNumber(e.target.value)} />
+        <button type="button" onClick={() => handleNewUser()}>Create User</button>
+        <button type="button" onClick={() => handleUpdateUser()}>Update User</button>
+      </form>
+
+      <hr/>
+      <h1>USER LIST</h1>
+      <input type="text" placeholder="Search" value={search} onChange={(e) => setSearch(e.target.value)} />      
+      <button type="button" onClick={() => handleSearch()}>Buscar</button>
+      <ul>
+      {
+        listausuarios?.map(item => <li key={item.id}>{item.name} - {item.email} - {item.password} - {item.phone} <button type='button' onClick={()=>handleEdit(item)} >Editar</button><button type='button' onClick={()=>handleRemove(item.id)} >ELIMINAR</button></li>)
+      }
+      </ul>
     </>
   )
 }
